@@ -30,7 +30,7 @@ data "aws_vpc" "default" {
 data "aws_subnets" "public" {
   filter {
     name   = "vpc-id"
-    values = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
+    values = [data.aws_vpc.default.id]
   }
 }
 
@@ -40,7 +40,14 @@ resource "aws_eks_cluster" "example" {
   role_arn = aws_iam_role.example.arn
 
   vpc_config {
-    subnet_ids = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
+    # subnet_ids = data.aws_subnets.public.ids
+    subnet_ids = [
+      "subnet-048d64ce7ed5e5801",
+      "subnet-0c37ced736688654d",
+      "subnet-0c8de16a94d701516",
+      "subnet-0f65d35bf17fcb1a0",
+      "subnet-05f96753f1feca7cc",
+    ]
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.
@@ -84,7 +91,13 @@ resource "aws_eks_node_group" "example" {
   cluster_name    = aws_eks_cluster.example.name
   node_group_name = "Node-cloud"
   node_role_arn   = aws_iam_role.example1.arn
-  subnet_ids      = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
+  subnet_ids      = [
+      "subnet-048d64ce7ed5e5801" ,
+      "subnet-0c37ced736688654d",
+      "subnet-0c8de16a94d701516",
+      "subnet-0f65d35bf17fcb1a0",
+      "subnet-05f96753f1feca7cc",
+    ]
 
   scaling_config {
     desired_size = 1
